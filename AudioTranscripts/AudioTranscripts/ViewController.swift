@@ -9,13 +9,24 @@ import UIKit
 import BMPlayer
 
 class ViewController: UIViewController {
-    
+    /**
+     It's defines the Custom player
+     */
     @IBOutlet weak var player: BMCustomPlayer!
     
     @IBOutlet weak var textContent: UITextView!
+    /**
+     It's contains complete SRT Contents
+     */
     var trancriptContent : String = ""
     
+    /**
+     Specify position of SRT file at index returning as string
+     */
     var currentTextLocation :Int = 1
+    /**
+     Specify last position of SRT file at index returning as string
+     */
     var previousTextLocation :Int = 0
     
     override func viewDidLoad() {
@@ -27,6 +38,7 @@ class ViewController: UIViewController {
     //let video url = "http://baobab.wdjcdn.com/1456117847747a_x264.mp4"
     //big bunny url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     
+    /// Function used to start player fromaudio or video player url as well as adding to SRT file with name into BMPlayer
     func playVideo(){
         let str = Bundle.main.url(forResource: "SubtitleDemo", withExtension: "srt")!
         let url = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")!
@@ -37,6 +49,7 @@ class ViewController: UIViewController {
                                      definitions: [BMPlayerResourceDefinition(url: url, definition: "480p")],
                                      cover: nil,
                                      subtitles: subtitle)
+        /// Player start at specific time that is called seekBar
         player.seek(1)
         player.setVideo(resource: asset)
         player.delegate = self
@@ -56,6 +69,10 @@ class ViewController: UIViewController {
 
 }
 
+
+/**
+ It's specify the properties used in BMPlayer authorised properties manage and control the view of player, returning the string
+ */
 extension ViewController: BMPlayerDelegate, BMPlayerControlViewDelegate{
     
     func controlView(controlView: BMPlayerControlView, didChooseDefinition index: Int){
@@ -73,20 +90,15 @@ extension ViewController: BMPlayerDelegate, BMPlayerControlViewDelegate{
     func controlView(controlView: BMPlayerControlView, didChangeVideoPlaybackRate rate: Float){
         print(rate)
     }
-
-    
     
     func bmPlayer(player: BMPlayer, playerStateDidChange state: BMPlayerState) {
         print(state)
     }
     
     func bmPlayer(player: BMPlayer, loadedTimeDidChange loadedDuration: TimeInterval, totalDuration: TimeInterval) {
-        print(totalDuration)        
-//        let data = player.resource.subtitle!.groups.map({return $0.text}).joined(separator: " ")
-//        print(player.resource.subtitle!.groups.map({return $0.text}).joined(separator: " "))
+        print(totalDuration)
     }
-    //player.resource.subtitle!.groups[0].text
-    //player.resource.subtitle!.groups.map({return $0.text}).joined(separator: " ")
+    
     func bmPlayer(player: BMPlayer, playTimeDidChange currentTime: TimeInterval, totalTime: TimeInterval) {
         let selectText = player.resource.subtitle?.search(for: currentTime)?.text
         if  let _ = self.trancriptContent.localizedStandardRange(of: selectText ?? ""){
@@ -109,8 +121,8 @@ extension ViewController: BMPlayerDelegate, BMPlayerControlViewDelegate{
 }
 
 extension ViewController{
-    /// <#Description#>
-    /// - Parameter text: <#text description#>
+    /// This function used to find colored the background of highlighted text, This method contains the NSMutableAttributedString returning the location and length of Highlighted text.
+    /// - Parameter text: input text behave as highlighted text on the basis of location and lenght.
     func loadTextInTableViewWithHighlighted(text:String){
         if text != ""{
             if let string = self.textContent.text, let range = string.localizedStandardRange(of: text) {
@@ -141,7 +153,6 @@ extension ViewController{
                             self.previousTextLocation = self.currentTextLocation
                             self.textContent.scrollRangeToVisible(viewRange)
                         }
-                      //  self.audioLocationDelegate?.getcurrentAndPreviousLocation(currentTextLocation: self.currentTextLocation, previousTextLocation: self.previousTextLocation)
                     }else{
                         self.textContent.textAlignment = .justified
                         var totlaTextLength:Int = 0
@@ -164,7 +175,6 @@ extension ViewController{
                                     self.textContent.font = (UIDevice.current.userInterfaceIdiom == .pad) ? UIFont(name: "Roboto", size: 22.0) : UIFont(name: "Roboto", size: 16.0)
                                     self.textContent.textAlignment = .justified
                                     self.currentTextLocation = curentTextLoc
-                               //     self.audioLocationDelegate?.getcurrentAndPreviousLocation(currentTextLocation: self.currentTextLocation, previousTextLocation: self.previousTextLocation)
                                     break
                                 }
                             }
@@ -179,10 +189,10 @@ extension ViewController{
 }
 
 extension NSMutableAttributedString{
-    /// <#Description#>
+    /// Mention The attributed string with font size
     /// - Parameters:
-    ///   - textToFind: <#textToFind description#>
-    ///   - color: <#color description#>
+    ///   - textToFind: define the string that are return from SRT File
+    ///   - color: specify the text color
     func setColorForText(_ textToFind: String, with color: UIColor) {
         let range = self.mutableString.range(of: textToFind, options: .caseInsensitive)
         if range.location != NSNotFound {
